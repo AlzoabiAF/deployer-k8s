@@ -1,0 +1,24 @@
+# Managed by Ansible
+
+vrrp_script chk_haproxy {
+  script "killall -0 haproxy"
+  interval 2
+  weight 2
+}
+
+vrrp_instance VI_1 {
+  interface {{ ha_vrrp_interface }}
+{% set control_hosts = groups['control'] | sort %}
+{% set is_master = inventory_hostname == control_hosts[0] %}
+  state {{ 'MASTER' if is_master else 'BACKUP' }}
+  virtual_router_id {{ ha_vrrp_router_id }}
+  priority {{ ha_keepalived_master_priority if is_master else ha_keepalived_backup_priority }}
+
+  virtual_ipaddress {
+    {{ ha_vip }}/{{ ha_vip_prefix }}
+  }
+
+  track_script {
+    chk_haproxy
+  }
+}

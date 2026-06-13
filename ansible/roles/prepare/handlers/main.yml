@@ -1,0 +1,19 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Restart chrony
+  ansible.builtin.service:
+    name: chrony
+    state: restarted
+    enabled: true
+
+- name: Restart containerd
+  ansible.builtin.service:
+    name: containerd
+    state: restarted
+    enabled: true
+
+- name: Restart kubelet
+  ansible.builtin.service:
+    name: kubelet
+    state: restarted
+    enabled: true

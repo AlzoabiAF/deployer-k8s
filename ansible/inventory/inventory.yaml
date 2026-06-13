@@ -1,0 +1,21 @@
+all:
+  children:
+    gw:
+      hosts:
+        gw-1.alzoabi.lab:
+    dns:
+      hosts:
+        dc-1.alzoabi.lab:
+    ntp:
+      hosts:
+        dc-1.alzoabi.lab:
+    control:
+      hosts:
+        control-node-[1:3].alzoabi.lab:
+    worker:
+      hosts:
+        worker-node-[1:2].alzoabi.lab:
+    k8s:
+      children:
+        control:
+        worker:

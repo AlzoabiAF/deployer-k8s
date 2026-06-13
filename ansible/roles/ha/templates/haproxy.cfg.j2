@@ -1,0 +1,37 @@
+# Managed by Ansible
+
+global
+    chroot      /var/lib/haproxy
+    maxconn     {{ ha_haproxy_maxconn }}
+    user        haproxy
+    group       haproxy
+    daemon
+
+defaults
+    log     global
+    mode    tcp
+    retries 2
+    timeout client 30m
+    timeout connect 4s
+    timeout server 30m
+    timeout check 5s
+
+frontend main
+    bind {{ ha_haproxy_bind_address }}:{{ ha_api_port }}
+    default_backend app
+
+backend app
+    balance roundrobin
+{% for host in groups['control'] | sort %}
+    server {{ host | regex_replace('\\..*$', '') | replace('-', '_') }} {{ hostvars[host]['ansible_host'] | default(host) }}:{{ ha_kube_api_port }} check
+{% endfor %}
+
+{% if ha_haproxy_stats_enabled | bool %}
+listen stats
+    bind *:{{ ha_haproxy_stats_port }}
+    mode http
+    stats enable
+    stats hide-version
+    stats realm Haproxy Statistics
+    stats uri {{ ha_haproxy_stats_uri }}
+{% endif %}

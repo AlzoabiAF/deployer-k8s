@@ -1,0 +1,26 @@
+---
+- name: Prepare configuration
+  hosts: k8s
+  become: true
+  roles:
+    - prepare
+  tags:
+    - prepare
+
+- name: Enable High Availability
+  hosts: control
+  become: true
+  roles:
+    - role: ha
+      when: enable_high_availability | default(false) | bool
+  tags:
+    - enable-high-availability
+  
+
+- name: Configure 1st control node
+  hosts: k8s:control
+  become: true
+  roles:
+    - kubeadm
+  tags:
+    - kubeadm

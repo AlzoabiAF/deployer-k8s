@@ -1,0 +1,10 @@
+.venv
+.vscode
+.DS_Store
+
+ansible.cfg
+
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+.terraform*

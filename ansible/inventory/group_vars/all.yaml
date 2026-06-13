@@ -1,0 +1,7 @@
+---
+enable_high_availability: false
+
+# variables for high availability role
+ha_vip: "10.0.0.10"
+ha_vip_prefix: 24
+ha_api_port: 7443

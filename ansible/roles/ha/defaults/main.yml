@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT-0
+---
+ha_vip: "10.0.0.10"
+ha_vip_prefix: 24
+
+ha_api_port: 7443
+ha_kube_api_port: 6443
+
+ha_vrrp_interface: "{{ ansible_default_ipv4.interface }}"
+ha_vrrp_router_id: 51
+ha_keepalived_master_priority: 101
+ha_keepalived_backup_priority: 100
+
+ha_haproxy_maxconn: 4000
+ha_haproxy_stats_enabled: true
+ha_haproxy_stats_port: 9000
+ha_haproxy_stats_uri: /haproxy_stats
+
+ha_haproxy_bind_address: "0.0.0.0"

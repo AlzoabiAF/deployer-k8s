@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Validate HA prerequisites
+  ansible.builtin.assert:
+    that:
+      - groups['control'] | length >= 2
+      - ha_vrrp_interface | length > 0
+    fail_msg: "HA requires at least 2 control nodes and a valid ha_vrrp_interface"
+  run_once: true
+
+- name: Install keepalived and haproxy
+  ansible.builtin.apt:
+    name:
+      - keepalived
+      - haproxy
+    state: present
+    update_cache: true
+  notify:
+    - Restart keepalived
+    - Restart haproxy
+
+- name: Configure keepalived
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: "0644"
+    validate: keepalived -t -f %s
+  notify: Restart keepalived
+
+- name: Configure haproxy
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: "0644"
+    validate: haproxy -c -f %s
+  notify: Restart haproxy

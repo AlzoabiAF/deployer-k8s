@@ -1,0 +1,88 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/prepare
+
+- name: Disable swap
+  ansible.posix.mount:
+    name: none
+    src: swap
+    fstype: swap
+    state: absent
+
+- name: Disable firewall service
+  ansible.builtin.service:
+    name: "{{ prepare_firewall_service }}"
+    state: stopped
+    enabled: false
+
+- name: Load br_netfilter and persist on boot
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+    persistent: present
+
+- name: Enable k8s sysctl settings
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: "1"
+    sysctl_file: /etc/sysctl.conf
+    state: present
+    reload: true
+  loop:
+    - net.ipv4.ip_forward
+    - net.bridge.bridge-nf-call-iptables
+    - net.ipv4.ip_nonlocal_bind
+
+- name: Add Kubernetes apt repository (Yandex mirror)
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    types: deb
+    uris: "{{ prepare_k8s_apt_repo_url }}"
+    suites: /
+    signed_by: "{{ prepare_k8s_apt_key_url }}"
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install apt dependencies for Kubernetes repository
+  ansible.builtin.apt:
+    name:
+      - bash-completion
+      - python3
+      - tar
+      - containerd
+      - chrony
+    state: present
+    update_cache: true
+  notify:
+    - Restart containerd
+    - Restart chrony
+
+- name: Install Kubernetes packages
+  ansible.builtin.apt:
+    name:
+      - "kubelet={{ prepare_k8s_version_full }}"
+      - "kubeadm={{ prepare_k8s_version_full }}"
+      - "kubectl={{ prepare_k8s_version_full }}"
+    state: present
+    update_cache: true
+    force: true
+  notify: Restart kubelet
+
+- name: Configure chrony
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart chrony
+
+- name: Configure crictl
+  ansible.builtin.copy:
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+    owner: root
+    group: root
+    mode: "0644"
