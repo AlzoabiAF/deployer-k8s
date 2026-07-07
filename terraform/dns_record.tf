@@ -41,7 +41,7 @@ resource "freeipa_dns_record" "record_k8s_worker_node_2" {
 resource "freeipa_dns_record" "record_k8s_gw_node" {
   zone_name = "alzoabi.lab"
   name      = "gw-1"
-  type    = "A"
+  type      = "A"
   records   = ["10.0.0.1"]
   ttl       = 3600
 }
