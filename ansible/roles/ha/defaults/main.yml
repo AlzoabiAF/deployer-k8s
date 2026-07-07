@@ -17,3 +17,4 @@ ha_haproxy_stats_port: 9000
 ha_haproxy_stats_uri: /haproxy_stats
 
 ha_haproxy_bind_address: "0.0.0.0"
+ha_haproxy_balance_algorithm: "source"

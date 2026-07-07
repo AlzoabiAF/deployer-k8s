@@ -15,7 +15,6 @@
       when: enable_high_availability | default(false) | bool
   tags:
     - enable-high-availability
-  
 
 - name: Configure 1st control node
   hosts: k8s:control

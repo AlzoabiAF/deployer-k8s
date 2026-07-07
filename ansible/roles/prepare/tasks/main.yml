@@ -1,4 +1,4 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
 # tasks file for roles/prepare
 
@@ -62,12 +62,12 @@
 - name: Install Kubernetes packages
   ansible.builtin.apt:
     name:
-      - "kubelet={{ prepare_k8s_version_full }}"
-      - "kubeadm={{ prepare_k8s_version_full }}"
-      - "kubectl={{ prepare_k8s_version_full }}"
+      - containerd
+      - kubelet={{ prepare_k8s_version_full }}
+      - kubeadm={{ prepare_k8s_version_full }}
+      - kubectl={{ prepare_k8s_version_full }}
     state: present
     update_cache: true
-    force: true
   notify: Restart kubelet
 
 - name: Configure chrony

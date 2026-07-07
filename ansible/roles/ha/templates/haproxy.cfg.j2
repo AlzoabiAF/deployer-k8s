@@ -21,7 +21,7 @@ frontend main
     default_backend app
 
 backend app
-    balance roundrobin
+    balance {{ ha_haproxy_balance_algorithm }}
 {% for host in groups['control'] | sort %}
     server {{ host | regex_replace('\\..*$', '') | replace('-', '_') }} {{ hostvars[host]['ansible_host'] | default(host) }}:{{ ha_kube_api_port }} check
 {% endfor %}
