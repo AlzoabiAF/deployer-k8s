@@ -23,3 +23,5 @@
     - kubeadm
   tags:
     - kubeadm
+
+# TODO: добавить настройку CNI - либо Calico, либо Cilium
