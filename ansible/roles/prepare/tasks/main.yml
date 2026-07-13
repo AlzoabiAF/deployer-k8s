@@ -33,6 +33,21 @@
     - net.bridge.bridge-nf-call-iptables
     - net.ipv4.ip_nonlocal_bind
 
+- name: Configure hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Вставить/обновить блок с хостами
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    create: true
+    mode: 644
+    marker: "# ANSIBLE INVENTORY HOSTS"
+    block: |
+      {% for host in groups['all'] %}
+      {{ hostvars[host].get('ansible_host', host) }} {{ host }}
+      {% endfor %}
+
 - name: Add Kubernetes apt repository (Yandex mirror)
   ansible.builtin.deb822_repository:
     name: kubernetes
@@ -55,20 +70,10 @@
       - chrony
     state: present
     update_cache: true
+    upgrade: "no"
   notify:
     - Restart containerd
     - Restart chrony
-
-- name: Install Kubernetes packages
-  ansible.builtin.apt:
-    name:
-      - containerd
-      - kubelet={{ prepare_k8s_version_full }}
-      - kubeadm={{ prepare_k8s_version_full }}
-      - kubectl={{ prepare_k8s_version_full }}
-    state: present
-    update_cache: true
-  notify: Restart kubelet
 
 - name: Configure chrony
   ansible.builtin.template:

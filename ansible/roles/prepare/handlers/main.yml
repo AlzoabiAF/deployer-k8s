@@ -11,9 +11,3 @@
     name: containerd
     state: restarted
     enabled: true
-
-- name: Restart kubelet
-  ansible.builtin.service:
-    name: kubelet
-    state: restarted
-    enabled: true

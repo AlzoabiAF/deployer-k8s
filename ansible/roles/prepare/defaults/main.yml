@@ -2,10 +2,8 @@
 ---
 prepare_firewall_service: ufw
 
-prepare_k8s_version: "1.34.9"
+prepare_k8s_version: "{{ k8s_version }}"
 prepare_k8s_minor_version: "{{ prepare_k8s_version | regex_search('^\\d+\\.\\d+') }}"
-prepare_k8s_version_suffix: "-1.1"
-prepare_k8s_version_full: "{{ prepare_k8s_version }}{{ prepare_k8s_version_suffix }}"
 
 prepare_k8s_apt_repo_url: "https://mirror.yandex.ru/mirrors/pkgs.k8s.io/core/stable/v{{ prepare_k8s_minor_version }}/deb/"
 prepare_k8s_apt_key_url: "{{ prepare_k8s_apt_repo_url }}Release.key"
