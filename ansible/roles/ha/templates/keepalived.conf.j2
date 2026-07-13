@@ -15,7 +15,7 @@ vrrp_instance VI_1 {
   priority {{ ha_keepalived_master_priority if is_master else ha_keepalived_backup_priority }}
 
   virtual_ipaddress {
-    {{ ha_vip }}/{{ ha_vip_prefix }}
+    {{ ha_vip_address }}/{{ ha_vip_prefix }}
   }
 
   track_script {

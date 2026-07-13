@@ -2,7 +2,7 @@
 
 global
     chroot      /var/lib/haproxy
-    maxconn     {{ ha_haproxy_maxconn }}
+    maxconn     4000
     user        haproxy
     group       haproxy
     daemon
@@ -17,21 +17,21 @@ defaults
     timeout check 5s
 
 frontend main
-    bind {{ ha_haproxy_bind_address }}:{{ ha_api_port }}
+    bind {{ ha_vip_address }}:{{ ha_vip_api_port }}
     default_backend app
 
 backend app
     balance {{ ha_haproxy_balance_algorithm }}
 {% for host in groups['control'] | sort %}
-    server {{ host | regex_replace('\\..*$', '') | replace('-', '_') }} {{ hostvars[host]['ansible_host'] | default(host) }}:{{ ha_kube_api_port }} check
+    server {{ host | regex_replace('\\..*$', '') }} {{ hostvars[host]['ansible_host'] | default(host) }}:{{ ha_kube_api_port }} check
 {% endfor %}
 
 {% if ha_haproxy_stats_enabled | bool %}
 listen stats
-    bind *:{{ ha_haproxy_stats_port }}
+    bind *:9000
     mode http
     stats enable
     stats hide-version
     stats realm Haproxy Statistics
-    stats uri {{ ha_haproxy_stats_uri }}
+    stats uri /haproxy_stats
 {% endif %}
