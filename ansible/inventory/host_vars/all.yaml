@@ -1,5 +1,7 @@
 ---
 
+k8s_version: "1.35.6"
+
 kube_api_port: 6443
 
 enable_high_availability: true
